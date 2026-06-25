@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npx prisma:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(cd:*)",
+      "Bash(npx prisma@5 --version)",
+      "Bash(rm -f prisma/dev.db)",
+      "Bash(npx prisma@5 migrate dev --name init)",
+      "Bash(ls:*)",
+      "Bash(npx prisma@5 db seed)",
+      "Bash(npx next:*)",
+      "Bash(curl:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

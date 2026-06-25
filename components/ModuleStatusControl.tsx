@@ -1,0 +1,125 @@
+﻿'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Select } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { formatCurrency } from '@/lib/utils'
+
+const STATUS_BY_WORK_TYPE: Record<string, { value: string; label: string }[]> = {
+  DIAGNOSTICO: [
+    { value: 'INGRESADO',      label: 'Ingresado'      },
+    { value: 'EN_DIAGNOSTICO', label: 'En diagnóstico' },
+    { value: 'LISTO',          label: 'Listo'          },
+    { value: 'ENTREGADO',      label: 'Entregado'      },
+  ],
+  REPARACION: [
+    { value: 'INGRESADO',      label: 'Ingresado'      },
+    { value: 'EN_DIAGNOSTICO', label: 'En diagnóstico' },
+    { value: 'EN_REPARACION',  label: 'En reparación'  },
+    { value: 'LISTO',          label: 'Listo'          },
+    { value: 'ENTREGADO',      label: 'Entregado'      },
+  ],
+  PROGRAMACION: [
+    { value: 'INGRESADO',       label: 'Ingresado'      },
+    { value: 'EN_PROGRAMACION', label: 'En programación'},
+    { value: 'LISTO',           label: 'Listo'          },
+    { value: 'ENTREGADO',       label: 'Entregado'      },
+  ],
+}
+
+export function ModuleStatusControl({ job }: { job: any }) {
+  const router = useRouter()
+  const [workType, setWorkType] = useState(job.workType)
+  const [status, setStatus] = useState(job.status)
+  const [paymentStatus, setPaymentStatus] = useState(job.paymentStatus)
+  const [budget, setBudget] = useState(job.budget?.toString() || '')
+  const [amountPaid, setAmountPaid] = useState(job.amountPaid?.toString() || '0')
+  const [saving, setSaving] = useState(false)
+
+  const statusOptions = STATUS_BY_WORK_TYPE[workType] ?? STATUS_BY_WORK_TYPE.DIAGNOSTICO
+
+  async function save() {
+    setSaving(true)
+    await fetch(`/api/modulos/${job.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ workType, status, paymentStatus, budget, amountPaid }),
+    })
+    setSaving(false)
+    router.refresh()
+  }
+
+  const budgetNum = parseFloat(budget) || 0
+  const paidNum = parseFloat(amountPaid) || 0
+  const saldo = budgetNum - paidNum
+
+  return (
+    <div className="bg-[#111c2e] border border-[#253652] rounded-lg p-4 space-y-3">
+      <p className="text-xs text-gray-400 uppercase tracking-wide">Actualizar estado</p>
+
+      <div className="flex flex-wrap gap-3 items-end">
+        <div className="flex-1 min-w-[140px]">
+          <Select
+            label="Tipo de trabajo"
+            value={workType}
+            onChange={e => {
+              const newType = e.target.value
+              setWorkType(newType)
+              const options = STATUS_BY_WORK_TYPE[newType] ?? []
+              const valid = options.some(o => o.value === status)
+              if (!valid) setStatus(options[0]?.value ?? 'INGRESADO')
+            }}
+          >
+            <option value="DIAGNOSTICO">Diagnóstico</option>
+            <option value="REPARACION">Reparación</option>
+            <option value="PROGRAMACION">Programación</option>
+          </Select>
+        </div>
+        <div className="flex-1 min-w-[140px]">
+          <Select label="Estado trabajo" value={status} onChange={e => setStatus(e.target.value)}>
+            {statusOptions.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex-1 min-w-[140px]">
+          <Select label="Estado pago" value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)}>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="SENA">Seña</option>
+            <option value="PARCIAL">Parcial</option>
+            <option value="PAGADO">Pagado</option>
+          </Select>
+        </div>
+        <div className="flex-1 min-w-[120px]">
+          <Input label="Presupuesto ($)" value={budget} onChange={e => setBudget(e.target.value)} type="number" step="0.01" />
+        </div>
+        <div className="flex-1 min-w-[120px]">
+          <Input label="Pagado ($)" value={amountPaid} onChange={e => setAmountPaid(e.target.value)} type="number" step="0.01" />
+        </div>
+        <Button onClick={save} disabled={saving} variant="secondary">
+          {saving ? 'Guardando...' : 'Guardar'}
+        </Button>
+      </div>
+
+      {budgetNum > 0 && (
+        <div className="flex gap-4 pt-1 border-t border-[#253652] flex-wrap">
+          <div className="text-xs">
+            <span className="text-gray-400">Presupuesto: </span>
+            <span className="text-white font-medium">{formatCurrency(budgetNum)}</span>
+          </div>
+          <div className="text-xs">
+            <span className="text-gray-400">Pagado: </span>
+            <span className="text-emerald-400 font-medium">{formatCurrency(paidNum)}</span>
+          </div>
+          <div className="text-xs">
+            <span className="text-gray-400">Saldo: </span>
+            <span className={`font-medium ${saldo > 0 ? 'text-yellow-400' : 'text-emerald-400'}`}>
+              {formatCurrency(saldo)}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,409 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String             @id @default(cuid())
+  name                  String
+  email                 String             @unique
+  password              String
+  role                  String             @default("OPERARIO")
+  notificationsEnabled  Boolean            @default(true)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+  pushSubscriptions     PushSubscription[]
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id        String    @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  dni       String?
+  type      String    @default("CLIENTE")
+  discount  Float?
+  notes     String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  vehicles   Vehicle[]
+  moduleJobs ModuleJob[]
+}
+
+model Vehicle {
+  id           String      @id @default(cuid())
+  plate        String      @unique
+  brand        String
+  model        String
+  year         Int?
+  km           Int?
+  color        String?
+  engineType   String?
+  displacement String?
+  engineCode   String?
+  clientId     String
+  client       Client      @relation(fields: [clientId], references: [id])
+  workOrders   WorkOrder[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model WorkOrder {
+  id            String        @id @default(cuid())
+  orderNumber   Int?          @unique
+  vehicleId     String
+  vehicle       Vehicle       @relation(fields: [vehicleId], references: [id])
+  entryDate     DateTime      @default(now())
+  motive        String
+  checkEngine   Boolean       @default(false)
+  abs           Boolean       @default(false)
+  airbag        Boolean       @default(false)
+  battery       Boolean       @default(false)
+  oil           Boolean       @default(false)
+  temperature   Boolean       @default(false)
+  brakes        Boolean       @default(false)
+  stability     Boolean       @default(false)
+  steering      Boolean       @default(false)
+  tpms          Boolean       @default(false)
+  fuel          Boolean       @default(false)
+  esp           Boolean       @default(false)
+  damageZones   String?
+  missingItems  String?
+  valuables     String?
+  photos        String?
+  reports       String?
+  csvLogs       String?
+  budget        Float?
+  amountPaid    Float         @default(0)
+  paymentStatus String        @default("PENDIENTE")
+  workStatus    String        @default("INGRESADO")
+  notes         String?
+  tracking      WorkTracking?
+  budgetItems   BudgetItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model WorkTracking {
+  id              String           @id @default(cuid())
+  workOrderId     String           @unique
+  workOrder       WorkOrder        @relation(fields: [workOrderId], references: [id])
+  photos          String?
+  videos          String?
+  scannerReport   String?
+  scannerPdf      String?
+  notes           String?
+  measurements    String?
+  scannedModules  String?
+  rootCause       String?
+  dtcCodes        DtcCode[]
+  partsUsed       PartUsed[]
+  diagnosticLog   DiagnosticEntry[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model DiagnosticEntry {
+  id             String       @id @default(cuid())
+  workTrackingId String
+  workTracking   WorkTracking @relation(fields: [workTrackingId], references: [id], onDelete: Cascade)
+  text           String
+  createdAt      DateTime     @default(now())
+}
+
+model DtcCode {
+  id             String       @id @default(cuid())
+  workTrackingId String
+  workTracking   WorkTracking @relation(fields: [workTrackingId], references: [id], onDelete: Cascade)
+  code           String
+  description    String?
+  createdAt      DateTime     @default(now())
+}
+
+model Product {
+  id        String     @id @default(cuid())
+  name      String
+  photo     String?
+  quantity  Int        @default(0)
+  minStock  Int        @default(0)
+  costPrice Float      @default(0)
+  unitPrice Float      @default(0)
+  partsUsed        PartUsed[]
+  budgetItems      BudgetItem[]
+  moduleBudgetItems ModuleBudgetItem[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model PartUsed {
+  id             String       @id @default(cuid())
+  workTrackingId String
+  workTracking   WorkTracking @relation(fields: [workTrackingId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product      @relation(fields: [productId], references: [id])
+  quantity       Int
+  unitPrice      Float
+  createdAt      DateTime     @default(now())
+}
+
+model BudgetItem {
+  id          String    @id @default(cuid())
+  workOrderId String
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  type        String    @default("OTRO")
+  description String
+  quantity    Float     @default(1)
+  cost        Float     @default(0)
+  price       Float     @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model ModuleType {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  moduleItems ModuleJobItem[]
+}
+
+model ModuleJob {
+  id            String             @id @default(cuid())
+  orderNumber   Int?               @unique
+
+  // Quién trae los módulos
+  clientId      String?
+  client        Client?            @relation(fields: [clientId], references: [id])
+  techName      String?
+  techPhone     String?
+  clientType    String             @default("TALLERISTA")
+
+  // Vehículo (solo texto)
+  vehicleBrand  String?
+  vehicleModel  String?
+  vehicleYear   Int?
+
+  // Trabajo
+  entryDate     DateTime           @default(now())
+  motive        String
+  workType      String             @default("DIAGNOSTICO")
+  status        String             @default("INGRESADO")
+
+  // Resultado
+  findings      String?
+  workDone      String?
+  notes         String?
+
+  // Contable
+  budget        Float?
+  amountPaid    Float              @default(0)
+  paymentStatus String             @default("PENDIENTE")
+
+  modules     ModuleJobItem[]
+  budgetItems ModuleBudgetItem[]
+  tracking    ModuleTracking?
+  shareToken  String?            @unique
+
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model ModuleTracking {
+  id           String              @id @default(cuid())
+  moduleJobId  String              @unique
+  moduleJob    ModuleJob           @relation(fields: [moduleJobId], references: [id], onDelete: Cascade)
+
+  // Inspección física (JSON: { damage, corrosion, burnedComponents, connectorDamage, description })
+  physicalInspection String?
+
+  // Prueba de alimentación en banco
+  supplyVoltage   String?
+  currentDraw     String?
+  moduleResponse  String?   // OK | NO_RESPONSE | ERROR | SHORT
+
+  // Comunicación
+  protocol          String?
+  scannerConnected  String?   // "SI" | "NO" | ""
+  softwareVersion   String?
+  partNumber        String?
+
+  // Mediciones en pines (JSON array of { pin, tipo, medido, esperado, result })
+  pinMeasurements String?
+
+  // Resultado
+  rootCause    String?
+  finalResult  String?   // REPARADO | NO_REPARABLE | PROGRAMADO | SIN_FALLA | EN_PROCESO
+
+  // Misc
+  notes  String?
+  photos String?
+
+  dtcCodes      ModuleDtcCode[]
+  diagnosticLog ModuleDiagEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModuleDtcCode {
+  id               String         @id @default(cuid())
+  moduleTrackingId String
+  moduleTracking   ModuleTracking @relation(fields: [moduleTrackingId], references: [id], onDelete: Cascade)
+  code             String
+  description      String?
+  createdAt        DateTime       @default(now())
+}
+
+model ModuleDiagEntry {
+  id               String         @id @default(cuid())
+  moduleTrackingId String
+  moduleTracking   ModuleTracking @relation(fields: [moduleTrackingId], references: [id], onDelete: Cascade)
+  text             String
+  createdAt        DateTime       @default(now())
+}
+
+model ModuleJobItem {
+  id           String     @id @default(cuid())
+  moduleJobId  String
+  moduleJob    ModuleJob  @relation(fields: [moduleJobId], references: [id], onDelete: Cascade)
+  moduleTypeId String
+  moduleType   ModuleType @relation(fields: [moduleTypeId], references: [id])
+  moduleBrand  String?
+  partNumber   String?
+  serialNumber String?
+  notes        String?
+  createdAt    DateTime   @default(now())
+}
+
+model ModuleBudgetItem {
+  id          String    @id @default(cuid())
+  moduleJobId String
+  moduleJob   ModuleJob @relation(fields: [moduleJobId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  type        String    @default("OTRO")
+  description String
+  quantity    Float     @default(1)
+  cost        Float     @default(0)
+  price       Float     @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String
+  amount      Float
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TechDoc {
+  id           String   @id @default(cuid())
+  name         String
+  category     String   @default("General")
+  vehicleModel String?
+  description  String?
+  filePath     String
+  fileType     String
+  fileSize     Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Appointment {
+  id          String    @id @default(cuid())
+  clientName  String
+  phone       String?
+  scheduledAt DateTime
+  service     String
+  status      String    @default("PENDIENTE")
+  notes       String?
+  notifiedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Config {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model ServicePrice {
+  id                   String   @id @default(cuid())
+  name                 String
+  order                Int      @default(0)
+  priceNaftaTaller     Float?
+  priceDieselTaller    Float?
+  priceNaftaParticular Float?
+  priceDieselParticular Float?
+  usdTaller            Float?
+  usdParticular        Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model QuickJob {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  service       String
+  description   String?
+  clientName    String?
+  price         Float    @default(0)
+  paymentStatus String   @default("PAGADO")
+  amountPaid    Float    @default(0)
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Presupuesto {
+  id         String   @id @default(cuid())
+  number     Int?
+  brand      String
+  model      String
+  year       String?
+  plate      String?
+  clientName String?
+  items      String
+  notes      String?
+  validHours Int      @default(48)
+  date       DateTime
+  total      Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model DiagnosticCase {
+  id            String   @id @default(cuid())
+  workOrderId   String?  @unique
+  title         String
+  vehicle       String
+  dtcCodes      String?
+  symptoms      String
+  rootCause     String?
+  solution      String?
+  parts         String?
+  aiAnalysis    String?
+  difficulty    String   @default("MEDIA")
+  status        String   @default("BORRADOR")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICATRONIC — Electrónica Automotriz | Navarro, Buenos Aires</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00e5ff;
+    --cyan-dim: #00b8cc;
+    --cyan-glow: rgba(0, 229, 255, 0.25);
+    --cyan-glow-strong: rgba(0, 229, 255, 0.5);
+    --bg-deep: #0a0c0f;
+    --bg-card: #0f1318;
+    --bg-card2: #131820;
+    --text: #e8f0f4;
+    --text-muted: #7a9aaa;
+    --border: rgba(0, 229, 255, 0.15);
+    --border-bright: rgba(0, 229, 255, 0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(10, 12, 15, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px var(--cyan-glow-strong);
+  }
+
+  .nav-logo span { color: var(--text); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan) !important;
+    padding: 8px 20px;
+    border-radius: 2px;
+    transition: background 0.2s, box-shadow 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: var(--cyan-glow) !important;
+    box-shadow: 0 0 20px var(--cyan-glow);
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,229,255,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,140,0,0.05) 0%, transparent 60%),
+      linear-gradient(180deg, #0a0c0f 0%, #0d1218 100%);
+  }
+
+  /* animated grid lines */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
+
+  @keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+  }
+
+  /* scan line */
+  .hero-scan {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scan 6s ease-in-out infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes scan {
+    0% { top: 10%; opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.4; }
+    100% { top: 90%; opacity: 0; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 820px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid var(--border-bright);
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 28px;
+    background: rgba(0,229,255,0.05);
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 7.5rem);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-shadow:
+      0 0 40px rgba(0,229,255,0.6),
+      0 0 80px rgba(0,229,255,0.2);
+    animation: fadeUp 0.8s 0.15s ease both;
+    margin-bottom: 4px;
+  }
+
+  .hero-title-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    font-weight: 500;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    animation: fadeUp 0.8s 0.25s ease both;
+    margin-bottom: 24px;
+  }
+
+  .hero-slogan {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-weight: 300;
+    color: var(--text);
+    opacity: 0.85;
+    margin-bottom: 12px;
+    animation: fadeUp 0.8s 0.35s ease both;
+  }
+
+  .hero-location {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+
+  .hero-location svg { vertical-align: middle; margin-right: 6px; }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.55s ease both;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--cyan);
+    color: #0a0c0f;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px var(--cyan-glow-strong);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    border: 1px solid var(--border-bright);
+    color: var(--cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .btn-outline:hover {
+    background: var(--cyan-glow);
+    box-shadow: 0 0 20px var(--cyan-glow);
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTIONS COMMON ─── */
+  section { position: relative; z-index: 1; }
+
+  .section-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 100px 24px;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .section-title span { color: var(--cyan); }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 64px;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--cyan);
+    margin-bottom: 24px;
+    box-shadow: 0 0 10px var(--cyan-glow-strong);
+  }
+
+  /* ─── SERVICES ─── */
+  #servicios { background: var(--bg-card); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .service-card {
+    background: var(--bg-card);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .service-card:hover { background: var(--bg-card2); }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    display: block;
+    filter: drop-shadow(0 0 8px var(--cyan-glow-strong));
+  }
+
+  .service-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+
+  .service-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .service-tag {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  /* ─── GALLERY ─── */
+  #galeria { background: var(--bg-deep); }
+
+  .gallery-placeholder {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .gallery-item {
+    aspect-ratio: 4/3;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .gallery-item:hover {
+    border-color: var(--cyan-dim);
+    box-shadow: 0 0 20px var(--cyan-glow);
+  }
+
+  .gallery-item svg { opacity: 0.3; }
+
+  .gallery-item .gallery-label {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    text-align: center;
+    padding: 0 16px;
+    line-height: 1.5;
+  }
+
+  .gallery-note {
+    margin-top: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 300;
+    border: 1px dashed var(--border);
+    padding: 16px;
+    border-radius: 2px;
+  }
+
+  /* ─── TURNO ─── */
+  #turno { background: var(--bg-card); }
+
+  .turno-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .turno-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .turno-info-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-bright);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(0,229,255,0.05);
+  }
+
+  .turno-info-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+
+  .turno-info-value {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: rgba(0,229,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300e5ff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  .form-select option { background: #0f1318; }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--cyan-dim);
+    box-shadow: 0 0 0 3px var(--cyan-glow);
+  }
+
+  .form-textarea { resize: vertical; min-height: 100px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: var(--cyan);
+    color: #0a0c0f;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-submit:hover {
+    box-shadow: 0 0 30px var(--cyan-glow-strong);
+    transform: translateY(-1px);
+  }
+
+  .form-success {
+    display: none;
+    background: rgba(0,229,255,0.07);
+    border: 1px solid var(--border-bright);
+    border-radius: 2px;
+    padding: 24px;
+    text-align: center;
+    color: var(--cyan);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  /* ─── CONTACTO / FOOTER ─── */
+  #contacto {
+    background: var(--bg-deep);
+    border-top: 1px solid var(--border);
+  }
+
+  .contacto-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 80px 24px 48px;
+  }
+
+  .contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 64px;
+  }
+
+  .contacto-block-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contacto-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 300;
+    padding: 8px 0;
+    transition: color 0.2s;
+  }
+
+  .contacto-link:hover { color: var(--cyan); }
+
+  .contacto-link svg { flex-shrink: 0; }
+
+  .horario-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,229,255,0.07);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .horario-item span:last-child { color: var(--text); }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px var(--cyan-glow-strong);
+  }
+
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* ─── WHATSAPP FLOAT ─── */
+  .wa-float {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    width: 58px;
+    height: 58px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+
+  .wa-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 30px rgba(37,211,102,0.6);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .turno-layout { grid-template-columns: 1fr; gap: 48px; }
+    .contacto-grid { grid-template-columns: 1fr; gap: 32px; }
+    .gallery-placeholder { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .gallery-placeholder { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+  }
+
+  /* ─── CIRCUIT DECORATION ─── */
+  .circuit-line {
+    position: absolute;
+    background: var(--cyan);
+    opacity: 0.08;
+    border-radius: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ICA<span>TRONIC</span></div>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#galeria">Trabajos</a></li>
+    <li><a href="#turno">Turnos</a></li>
+    <li><a href="#contacto" class="nav-cta">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-scan"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">📍 Navarro, Buenos Aires</div>
+    <h1 class="hero-title">ICATRONIC</h1>
+    <p class="hero-title-sub">Electrónica Automotriz</p>
+    <p class="hero-slogan">Soluciones en Electrónica Automotriz</p>
+    <p class="hero-location">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+      Navarro, Buenos Aires · Lun–Vie 8:30–12:30 | 15:30–19:30
+    </p>
+    <div class="hero-btns">
+      <a href="#turno" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Pedir Turno
+      </a>
+      <a href="https://wa.me/5491164715192" target="_blank" class="btn-outline">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-inner">
+    <p class="section-label">Lo que hacemos</p>
+    <div class="divider"></div>
+    <h2 class="section-title">Nuestros <span>Servicios</span></h2>
+    <p class="section-desc">Diagnóstico profesional y soluciones integrales para la electrónica de tu vehículo.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <span class="service-icon">🔍</span>
+        <div class="service-name">Diagnóstico Electrónico</div>
+        <p class="service-desc">Lectura y análisis de fallas con equipamiento profesional. Identificación precisa de problemas en todos los sistemas electrónicos del vehículo.</p>
+        <span class="service-tag">Diagnóstico</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🧠</span>
+        <div class="service-name">Reparación de ECUs</div>
+        <p class="service-desc">Reparación a nivel de componente de unidades de control del motor. Soldadura SMD, reemplazo de componentes y reprogramación.</p>
+        <span class="service-tag">Reparación</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🚗</span>
+        <div class="service-name">Tableros e Instrumentos</div>
+        <p class="service-desc">Reparación de tableros de instrumentos, clusters y pantallas. Corrección de indicadores y sistemas de información del conductor.</p>
+        <span class="service-tag">Reparación</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">⚡</span>
+        <div class="service-name">Fusibleras y Módulos</div>
+        <p class="service-desc">Diagnóstico y reparación de cajas de fusibles, módulos de distribución eléctrica y centros eléctricos.</p>
+        <span class="service-tag">Electricidad</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🔑</span>
+        <div class="service-name">Llaves Codificadas</div>
+        <p class="service-desc">Programación de llaves y mandos de apertura. Duplicado de llaves con chip transponder y codificación de llaves de proximidad.</p>
+        <span class="service-tag">Programación</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">💻</span>
+        <div class="service-name">Programaciones</div>
+        <p class="service-desc">Programación y adaptación de módulos, ECU y unidades de control. Actualización de software y parametrización de sistemas.</p>
+        <span class="service-tag">Software</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">♻️</span>
+        <div class="service-name">Anulación DPF / EGR</div>
+        <p class="service-desc">Anulación por software de filtro de partículas (DPF) y válvula EGR. Solución definitiva para problemas recurrentes en sistemas de postratamiento.</p>
+        <span class="service-tag">Tuning</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🔓</span>
+        <div class="service-name">Desinmovilizaciones</div>
+        <p class="service-desc">Eliminación de sistemas antirrobo e inmovilizadores. Recuperación de vehículos con llaves perdidas o sistemas de seguridad dañados.</p>
+        <span class="service-tag">Seguridad</span>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🛠️</span>
+        <div class="service-name">Otros Servicios</div>
+        <p class="service-desc">Consultar por servicios adicionales. Trabajamos con la mayoría de marcas y modelos del mercado. Soluciones a medida para cada vehículo.</p>
+        <span class="service-tag">Consultar</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section id="galeria">
+  <div class="section-inner">
+    <p class="section-label">Nuestros trabajos</p>
+    <div class="divider"></div>
+    <h2 class="section-title">Galería de <span>Trabajos</span></h2>
+    <p class="section-desc">Algunos de los trabajos realizados en el taller. Cada vehículo recibe atención personalizada y profesional.</p>
+
+    <div class="gallery-placeholder">
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 1</span>
+      </div>
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 2</span>
+      </div>
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 3</span>
+      </div>
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 4</span>
+      </div>
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 5</span>
+      </div>
+      <div class="gallery-item">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="gallery-label">Foto de trabajo 6</span>
+      </div>
+    </div>
+    <div class="gallery-note">
+      📸 Galería lista para cargar tus fotos · Subí tus imágenes y se mostrarán aquí
+    </div>
+  </div>
+</section>
+
+<!-- TURNO -->
+<section id="turno">
+  <div class="section-inner">
+    <p class="section-label">Reservá tu lugar</p>
+    <div class="divider"></div>
+    <h2 class="section-title">Pedí tu <span>Turno</span></h2>
+    <p class="section-desc">Completá el formulario y te contactamos para confirmar día y horario.</p>
+
+    <div class="turno-layout">
+      <div>
+        <div class="turno-info-item">
+          <div class="turno-info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .82h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="turno-info-label">WhatsApp</div>
+            <div class="turno-info-value">11-6471-5192</div>
+          </div>
+        </div>
+        <div class="turno-info-item">
+          <div class="turno-info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#00e5ff"/></svg>
+          </div>
+          <div>
+            <div class="turno-info-label">Instagram</div>
+            <div class="turno-info-value">@icatronic.lab</div>
+          </div>
+        </div>
+        <div class="turno-info-item">
+          <div class="turno-info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+          </div>
+          <div>
+            <div class="turno-info-label">Ubicación</div>
+            <div class="turno-info-value">Navarro, Buenos Aires</div>
+          </div>
+        </div>
+        <div class="turno-info-item">
+          <div class="turno-info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="turno-info-label">Horarios</div>
+            <div class="turno-info-value">
+              Lun a Vie<br>
+              8:30 – 12:30 | 15:30 – 19:30
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <form id="turnoForm" onsubmit="submitTurno(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-input" placeholder="Tu nombre" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-input" placeholder="Tu teléfono" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Vehículo</label>
+            <input type="text" class="form-input" placeholder="Marca, modelo y año" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Servicio requerido</label>
+            <select class="form-select form-input" required>
+              <option value="" disabled selected>Seleccioná un servicio</option>
+              <option>Diagnóstico electrónico</option>
+              <option>Reparación de ECU</option>
+              <option>Reparación de tablero</option>
+              <option>Reparación de fusiblera</option>
+              <option>Llave codificada</option>
+              <option>Programación de módulo</option>
+              <option>Anulación DPF / EGR</option>
+              <option>Desinmovilización</option>
+              <option>Otro / Consulta</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Día preferido</label>
+              <input type="date" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Turno</label>
+              <select class="form-select form-input" required>
+                <option value="" disabled selected>Horario</option>
+                <option>Mañana (8:30 – 12:30)</option>
+                <option>Tarde (15:30 – 19:30)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción del problema</label>
+            <textarea class="form-textarea form-input" placeholder="Contanos brevemente el problema o consulta..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Solicitar Turno</button>
+        </form>
+        <div class="form-success" id="formSuccess">
+          ✅ ¡Solicitud enviada!<br>
+          <span style="font-size:0.85rem;color:#7a9aaa;font-weight:300;font-family:'Exo 2',sans-serif;">Te contactamos a la brevedad para confirmar.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO / FOOTER -->
+<section id="contacto">
+  <div class="contacto-inner">
+    <div class="contacto-grid">
+      <div>
+        <div class="contacto-block-title">ICATRONIC</div>
+        <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.7;font-weight:300;margin-bottom:20px;">
+          Soluciones en electrónica automotriz. Diagnóstico profesional, reparación y programación de sistemas electrónicos en Navarro, Buenos Aires.
+        </p>
+        <a href="https://www.instagram.com/icatronic.lab" target="_blank" class="contacto-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          @icatronic.lab
+        </a>
+        <a href="https://wa.me/5491164715192" target="_blank" class="contacto-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          11-6471-5192
+        </a>
+      </div>
+
+      <div>
+        <div class="contacto-block-title">Servicios</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Diagnóstico electrónico</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Reparación de ECUs</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Tableros e instrumentos</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Fusibleras y módulos</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Llaves codificadas</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Programaciones</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Anulación DPF / EGR</span>
+          <span style="color:var(--text-muted);font-size:0.85rem;font-weight:300;">→ Desinmovilizaciones</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="contacto-block-title">Horarios</div>
+        <div class="horario-item">
+          <span>Lunes a Viernes</span>
+          <span>8:30 – 12:30</span>
+        </div>
+        <div class="horario-item">
+          <span>Lunes a Viernes</span>
+          <span>15:30 – 19:30</span>
+        </div>
+        <div class="horario-item" style="opacity:0.4">
+          <span>Sábados</span>
+          <span>Cerrado</span>
+        </div>
+        <div class="horario-item" style="opacity:0.4">
+          <span>Domingos</span>
+          <span>Cerrado</span>
+        </div>
+        <div style="margin-top:20px;padding:12px;border:1px solid var(--border);border-radius:2px;background:rgba(0,229,255,0.03);">
+          <div style="font-size:0.7rem;letter-spacing:2px;color:var(--cyan);margin-bottom:6px;font-weight:600;text-transform:uppercase;">Navarro, Buenos Aires</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);font-weight:300;">Atención con turno previo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-logo">ICATRONIC</div>
+      <div class="footer-copy">© 2025 ICATRONIC · Electrónica Automotriz · Navarro, Buenos Aires</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHATSAPP FLOTANTE -->
+<a href="https://wa.me/5491164715192" target="_blank" class="wa-float" title="Escribinos por WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+function submitTurno(e) {
+  e.preventDefault();
+  const form = document.getElementById('turnoForm');
+  const success = document.getElementById('formSuccess');
+  form.style.display = 'none';
+  success.style.display = 'block';
+}
+</script>
+
+</body>
+</html>

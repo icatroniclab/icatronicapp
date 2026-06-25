@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  --cyan:        #00e5ff;
+  --cyan-dim:    #00b8cc;
+  --cyan-glow:   rgba(0, 229, 255, 0.2);
+  --cyan-glow-strong: rgba(0, 229, 255, 0.45);
+  --bg-deep:     #111c2e;
+  --bg-card:     #192638;
+  --bg-card2:    #1c2b3f;
+  --border:      rgba(0, 229, 255, 0.18);
+  --border-bright: rgba(0, 229, 255, 0.45);
+  --text:        #e8f0f4;
+  --text-muted:  #8aacbe;
+
+  /* semantic aliases used by older code */
+  --background:  var(--bg-deep);
+  --foreground:  var(--text);
+  --card:        var(--bg-card);
+  --card-border: var(--border);
+  --accent:      var(--cyan);
+  --accent-hover: var(--cyan-dim);
+  --muted:       #243448;
+  --muted-fg:    var(--text-muted);
+  --success:     #10b981;
+  --warning:     #f59e0b;
+  --danger:      #ef4444;
+  --sidebar:     #0c1728;
+}
+
+@theme inline {
+  --color-background: #111c2e;
+  --color-foreground: #e8f0f4;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background: #111c2e;
+}
+
+body {
+  background: #111c2e;
+  color: #e8f0f4;
+  font-family: 'Exo 2', 'Segoe UI', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Select options — fuerza fondo oscuro en el dropdown nativo */
+select option {
+  background: #192638;
+  color: #e8f0f4;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,229,255,0.4); }
+
+/* Card cyber hover effect */
+.card-cyber {
+  position: relative;
+  overflow: hidden;
+}
+.card-cyber::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+  box-shadow: 0 0 12px var(--cyan-glow-strong);
+}
+.card-cyber:hover::before {
+  transform: scaleX(1);
+}
