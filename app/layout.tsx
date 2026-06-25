@@ -5,10 +5,16 @@ import { Providers } from './providers'
 export const metadata: Metadata = {
   title: 'IcatronicApp',
   description: 'Sistema de gestión para taller de electrónica automotriz',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Icatronic',
+  },
   icons: {
-    icon: '/logo-icon.svg',
-    shortcut: '/logo-icon.svg',
-    apple: '/logo-icon.svg',
+    icon: '/icon-192.png',
+    shortcut: '/icon-192.png',
+    apple: '/icon-192.png',
   },
 }
 
