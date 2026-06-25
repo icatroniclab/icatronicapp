@@ -19,9 +19,10 @@ export default async function DashboardPage() {
     totalVehiculos,
     trabajosActivos,
     ingresosMes,
-    stockBajo,
+    todosProductos,
     trabajosRecientes,
     turnosHoyManana,
+    gastosMes,
   ] = await Promise.all([
     prisma.vehicle.count(),
     prisma.workOrder.count({ where: { workStatus: { in: ['INGRESADO', 'EN_PROCESO'] } } }),
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
       where: { paymentStatus: 'PAGADO', createdAt: { gte: firstOfMonth } },
       _sum: { budget: true },
     }),
-    prisma.product.count({ where: { quantity: { lte: prisma.product.fields.minStock } } }),
+    prisma.product.findMany({ select: { id: true, name: true, quantity: true, minStock: true } }),
     prisma.workOrder.findMany({
       take: 8,
       orderBy: { createdAt: 'desc' },
@@ -42,17 +43,14 @@ export default async function DashboardPage() {
       },
       orderBy: { scheduledAt: 'asc' },
     }),
+    prisma.expense.aggregate({
+      where: { date: { gte: firstOfMonth } },
+      _sum: { amount: true },
+    }),
   ])
 
-  const gastosMes = await prisma.expense.aggregate({
-    where: { date: { gte: firstOfMonth } },
-    _sum: { amount: true },
-  })
-
-  const stockAlerts = await prisma.product.findMany({
-    where: { quantity: { lte: prisma.product.fields.minStock } },
-    take: 5,
-  })
+  const stockAlerts = todosProductos.filter(p => p.quantity <= p.minStock).slice(0, 5)
+  const stockBajo = stockAlerts.length
 
   const ingresos = ingresosMes._sum.budget ?? 0
   const gastos = gastosMes._sum.amount ?? 0
