@@ -136,7 +136,7 @@ function ReciboPdf({ job, budgetItems, cfg }: { job: any; budgetItems: any[]; cf
         </View>
 
         {/* ── CLIENTE + VEHICULO ── */}
-        <View style={s.infoRow}>
+        <View style={s.infoRow} wrap={false}>
           <View style={s.card}>
             <Text style={s.cardLabel}>Cliente</Text>
             <Text style={s.cardTitle}>{clientName}</Text>
@@ -155,7 +155,7 @@ function ReciboPdf({ job, budgetItems, cfg }: { job: any; budgetItems: any[]; cf
         <View style={{ marginBottom: 20 }}>
           <Text style={s.sectionTitle}>Modulo(s) ingresado(s)</Text>
           {job.modules.map((m: any) => (
-            <View key={m.id} style={s.moduleRow}>
+            <View key={m.id} style={s.moduleRow} wrap={false}>
               <View style={{ flex: 1 }}>
                 <Text style={s.moduleName}>{m.moduleType.name}{m.moduleBrand ? ` — ${m.moduleBrand}` : ''}</Text>
                 {m.partNumber   && <Text style={s.moduleSub}>PN: {m.partNumber}</Text>}
@@ -189,7 +189,7 @@ function ReciboPdf({ job, budgetItems, cfg }: { job: any; budgetItems: any[]; cf
               <Text style={[s.tHCell, { width: 70, textAlign: 'right' }]}>Total</Text>
             </View>
             {budgetItems.map((it: any, i: number) => (
-              <View key={it.id} style={i % 2 === 0 ? s.tRow : s.tRowAlt}>
+              <View key={it.id} style={i % 2 === 0 ? s.tRow : s.tRowAlt} wrap={false}>
                 <Text style={[s.tCell, { flex: 3 }]}>{it.description}</Text>
                 <Text style={[s.tCell, { width: 40, textAlign: 'center' }]}>{it.quantity}</Text>
                 <Text style={[s.tCell, { width: 70, textAlign: 'right' }]}>{fmtCurrency(it.price)}</Text>

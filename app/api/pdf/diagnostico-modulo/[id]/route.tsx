@@ -200,7 +200,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
         </View>
 
         {/* ── INFO CARDS ── */}
-        <View style={s.infoRow}>
+        <View style={s.infoRow} wrap={false}>
           {/* Cliente */}
           <View style={s.card}>
             <Text style={s.cardLabel}>Cliente</Text>
@@ -231,7 +231,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
         </View>
 
         {/* ── MOTIVO ── */}
-        <View style={s.section}>
+        <View style={s.section} wrap={false}>
           <SectionHeader title="Motivo de ingreso" />
           <View style={s.secBody}>
             <Text style={s.bodyText}>{job.motive || '—'}</Text>
@@ -240,7 +240,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── INSPECCION FISICA ── */}
         {physical && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="1. Inspeccion fisica" />
             <View style={s.secBody}>
               <View style={s.checkRow}>
@@ -256,7 +256,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── ALIMENTACION EN BANCO ── */}
         {tracking && (tracking.supplyVoltage || tracking.currentDraw || tracking.moduleResponse) && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="2. Prueba de alimentacion en banco" />
             <View style={s.secBody}>
               <View style={s.fieldRow}>
@@ -270,7 +270,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── PROTOCOLO Y COMUNICACION ── */}
         {tracking && (tracking.protocol || tracking.scannerConnected || tracking.softwareVersion || tracking.partNumber) && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="3. Protocolo y comunicacion" />
             <View style={s.secBody}>
               <View style={s.fieldRow}>
@@ -284,13 +284,13 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
         )}
 
         {/* ── CODIGOS DTC ── */}
-        <View style={s.section}>
+        <View style={s.section} wrap={false}>
           <SectionHeader title="4. Codigos DTC" />
           <View style={s.secBody}>
             {dtcCodes.length === 0
               ? <Text style={s.emptyMsg}>Sin codigos DTC registrados</Text>
               : dtcCodes.map((d: any) => (
-                <View key={d.id} style={s.dtcRow}>
+                <View key={d.id} style={s.dtcRow} wrap={false}>
                   <Text style={s.dtcCode}>{d.code}</Text>
                   <Text style={s.dtcDesc}>{d.description || '—'}</Text>
                 </View>
@@ -301,7 +301,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── MEDICIONES EN PINES ── */}
         {pins.length > 0 && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="5. Mediciones en pines" />
             <View style={s.secBody}>
               <View style={s.tHead}>
@@ -312,7 +312,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
                 <Text style={[s.tHCell, { width: 52 }]}>Resultado</Text>
               </View>
               {pins.map((row: any, i: number) => (
-                <View key={i} style={i % 2 === 0 ? s.tRow : s.tRowAlt}>
+                <View key={i} style={i % 2 === 0 ? s.tRow : s.tRowAlt} wrap={false}>
                   <Text style={[s.tCell, { flex: 3 }]}>{row.pin || '—'}</Text>
                   <Text style={[s.tCell, { width: 48 }]}>{row.tipo || '—'}</Text>
                   <Text style={[s.tCell, { width: 48 }]}>{row.medido || '—'}</Text>
@@ -331,7 +331,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── CAUSA RAIZ ── */}
         {tracking?.rootCause && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="6. Causa raiz confirmada" />
             <View style={s.secBody}>
               <Text style={s.bodyText}>{tracking.rootCause}</Text>
@@ -341,7 +341,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── RESULTADO FINAL ── */}
         {finalResult && finalColors && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="7. Resultado final" />
             <View style={[s.secBody, { paddingTop: 4 }]}>
               <View style={[s.resultWrap, { borderColor: finalColors.border, backgroundColor: finalColors.bg }]}>
@@ -355,11 +355,11 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── BITACORA ── */}
         {logEntries.length > 0 && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="8. Bitacora de diagnostico" />
             <View style={s.secBody}>
               {logEntries.map((e: any) => (
-                <View key={e.id} style={s.logEntry}>
+                <View key={e.id} style={s.logEntry} wrap={false}>
                   <Text style={s.logDate}>{fmtDateTime(e.createdAt)}</Text>
                   <Text style={s.logText}>{e.text}</Text>
                 </View>
@@ -370,7 +370,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── HALLAZGOS Y TRABAJO ── */}
         {(job.findings || job.workDone) && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="9. Hallazgos y trabajo realizado" />
             <View style={s.secBody}>
               {job.findings && (
@@ -391,7 +391,7 @@ function DiagnosticoPdf({ job, cfg }: { job: any; cfg: Record<string, string> })
 
         {/* ── PRESUPUESTO ── */}
         {(job.budget != null || job.amountPaid > 0) && (
-          <View style={s.section}>
+          <View style={s.section} wrap={false}>
             <SectionHeader title="Informacion economica" />
             <View style={s.secBody}>
               <View style={s.fieldRow}>
