@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Cpu, Car, FileText } from 'lucide-react'
+import { ArrowLeft, Cpu, Car, FileText, ClipboardList } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -109,6 +109,9 @@ export default async function ModuloDetailPage({ params }: { params: Promise<{ i
           status={job.status}
           tallerNombre={tallerNombre}
         />
+        <a href={`/api/pdf/diagnostico-modulo/${job.id}`} target="_blank" rel="noopener">
+          <Button variant="secondary" size="sm"><ClipboardList size={14} /> Informe PDF</Button>
+        </a>
         <a href={`/api/pdf/recibo-modulo/${job.id}`} target="_blank" rel="noopener">
           <Button variant="secondary" size="sm"><FileText size={14} /> Recibo PDF</Button>
         </a>
